@@ -20,28 +20,35 @@ var (
 	err1 = errors.New("parseData := strings.Split(data, ',') возвращает менее 3 строк")
 	// строка имеет недопустимый символ ':'
 	err2 = errors.New("строка имеет недопустимый символ ':'")
-	// значение до разделителя ',' отсутствуют
-	err3 = errors.New("значение до разделителя ',' отсутствуют")
+	// кол-во шагов <= 0
+	err4 = errors.New("значение по индексу <= 0")
+	// len(slice[]) <= 0
+	err5 = errors.New("len(slice[]) <= 0")
 )
 
 // Функция parseTraining парсит строку на 3 элемента по ","
 func parseTraining(data string) (int, string, time.Duration, error) {
 	parseData := strings.Split(data, ",")
+	if len(parseData) <= 0 {
+		return 0, "", 0, fmt.Errorf("ошибка выполнения parseTraining: %w", err5)
+	}
+	if len(parseData) != 3 {
+		return 0, "", 0, fmt.Errorf("ошибка выполнения parseTraining: %w", err1)
+	}
 
 	separator := strings.Contains(data, ":")
 	if separator { // separator != 0
-		return 0, "", 0, fmt.Errorf("ошибка выполнения parseTraining: %v", err2)
+		return 0, "", 0, fmt.Errorf("ошибка выполнения parseTraining: %w", err2)
 	}
-	if len(parseData) != 3 {
-		return 0, "", 0, fmt.Errorf("ошибка выполнения parseTraining: %v", err1)
+	if parseData[0] <= "" {
+		return 0, "", 0, fmt.Errorf("ошибка выполнения parsePackage: %w", err4)
 	}
-	if parseData[0] == "" {
-		return 0, "", 0, fmt.Errorf("ошибка выполнения parseTraining: %v", err3)
-	}
-
 	steps, err := strconv.Atoi(parseData[0])
 	if err != nil {
 		return 0, "", 0, err
+	}
+	if parseData[2] <= "" {
+		return 0, "", 0, fmt.Errorf("ошибка выполнения parsePackage: %w", err4)
 	}
 	temeWorkout, err := time.ParseDuration(parseData[2])
 	if err != nil {

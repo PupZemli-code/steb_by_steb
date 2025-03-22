@@ -14,22 +14,25 @@ var (
 	StepLength = 0.65 // длина шага в метрах
 	err1       = errors.New("parseData := strings.Split(data, ',') возвращает менее 2 строк")
 	err2       = errors.New("строка имеет недопустимый символ ':'")
-	err3       = errors.New("значение до разделителя ',' отсутствуют")
+	err4       = errors.New("значение по индексу <= 0")
+	err5       = errors.New("len(slice[]) <= 0")
 )
 
 // parsePackage парсит входящие строки по ","
 func parsePackage(data string) (int, time.Duration, error) {
 	parseData := strings.Split(data, ",")
-	//fmt.Println(len(parseData))
+	if len(parseData) <= 0 {
+		return 0, 0, fmt.Errorf("ошибка выполнения parsePackage: %w", err5)
+	}
 	separator := strings.Contains(data, ":")
 	if separator { // separator != 0
-		return 0, 0, fmt.Errorf("ошибка выполнения parsePackage: %v", err2)
+		return 0, 0, fmt.Errorf("ошибка выполнения parsePackage: %w", err2)
 	}
-	if parseData[0] == "" {
-		return 0, 0, fmt.Errorf("ошибка выполнения parsePackage: %v", err3)
+	if parseData[0] <= "" {
+		return 0, 0, fmt.Errorf("ошибка выполнения parsePackage: %w", err4)
 	}
 	if len(parseData) != 2 {
-		return 0, 0, fmt.Errorf("ошибка выполнения parsePackage: %v", err1)
+		return 0, 0, fmt.Errorf("ошибка выполнения parsePackage: %w", err1)
 	}
 
 	steps, err := strconv.Atoi(parseData[0])
@@ -37,7 +40,10 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, err
 	}
 	if steps <= 0 {
-		return 0, 0, errors.New("кол-во шагов <= 0")
+		return 0, 0, fmt.Errorf("ошибка выполнения parsePackage: %w", err4)
+	}
+	if parseData[1] <= "" {
+		return 0, 0, fmt.Errorf("ошибка выполнения parsePackage: %w", err4)
 	}
 	timeWorkout, err := time.ParseDuration(parseData[1])
 	//fmt.Println(len(parseData))
